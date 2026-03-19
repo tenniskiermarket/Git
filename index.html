@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>サービス紹介</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent: #2563eb;
+      --accent-dark: #1d4ed8;
+      --text: #111827;
+      --muted: #6b7280;
+      --bg: #ffffff;
+      --bg-alt: #f9fafb;
+      --border: #e5e7eb;
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Hiragino Sans', 'Meiryo', sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-size: 1.2rem; font-weight: 700; color: var(--accent); }
+    .nav-cta {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: .5rem 1.2rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: .9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background .2s;
+    }
+    .nav-cta:hover { background: var(--accent-dark); }
+
+    /* ── Hero ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 1.5rem 4rem;
+      background: linear-gradient(160deg, #eff6ff 0%, #ffffff 60%);
+    }
+    .hero-badge {
+      display: inline-block;
+      background: #dbeafe;
+      color: var(--accent);
+      font-size: .8rem;
+      font-weight: 700;
+      padding: .3rem .9rem;
+      border-radius: 999px;
+      margin-bottom: 1.5rem;
+      letter-spacing: .05em;
+    }
+    #hero h1 {
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 1.2rem;
+      letter-spacing: -.02em;
+    }
+    #hero h1 span { color: var(--accent); }
+    #hero p {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: var(--muted);
+      max-width: 520px;
+      margin-bottom: 2.5rem;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      padding: .9rem 2.4rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background .2s, transform .15s;
+      display: inline-block;
+    }
+    .btn-primary:hover { background: var(--accent-dark); transform: translateY(-2px); }
+
+    /* ── Section base ── */
+    section { padding: 5rem 1.5rem; }
+    .section-inner { max-width: 1000px; margin: 0 auto; }
+    .section-label {
+      text-align: center;
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: .8rem;
+    }
+    .section-title {
+      text-align: center;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 800;
+      margin-bottom: 3rem;
+    }
+
+    /* ── Features ── */
+    #features { background: var(--bg-alt); }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+    .feature-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      transition: box-shadow .2s, transform .2s;
+    }
+    .feature-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.08); transform: translateY(-4px); }
+    .feature-icon {
+      width: 48px; height: 48px;
+      background: #dbeafe;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .feature-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: .5rem; }
+    .feature-card p { font-size: .95rem; color: var(--muted); }
+
+    /* ── CTA ── */
+    #cta {
+      background: linear-gradient(135deg, var(--accent) 0%, #1e40af 100%);
+      color: #fff;
+      text-align: center;
+    }
+    #cta .section-title { color: #fff; }
+    #cta p { color: rgba(255,255,255,.8); margin-bottom: 2rem; font-size: 1.05rem; }
+    .btn-white {
+      background: #fff;
+      color: var(--accent);
+      padding: .9rem 2.4rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: opacity .2s, transform .15s;
+      display: inline-block;
+    }
+    .btn-white:hover { opacity: .9; transform: translateY(-2px); }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--text);
+      color: rgba(255,255,255,.5);
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: .85rem;
+    }
+
+    /* ── Fade-in animation ── */
+    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <span class="nav-logo">MyService</span>
+    <a href="#cta" class="nav-cta">お問い合わせ</a>
+  </nav>
+
+  <!-- Hero -->
+  <section id="hero">
+    <span class="hero-badge">NEW SERVICE</span>
+    <h1>あなたのビジネスを<br><span>次のステージへ</span></h1>
+    <p>シンプルで強力なツールで、チームの生産性を最大化します。今すぐ始めましょう。</p>
+    <a href="#cta" class="btn-primary">無料で始める →</a>
+  </section>
+
+  <!-- Features -->
+  <section id="features">
+    <div class="section-inner">
+      <p class="section-label">Features</p>
+      <h2 class="section-title">選ばれる3つの理由</h2>
+      <div class="features-grid">
+        <div class="feature-card fade-in">
+          <div class="feature-icon">⚡</div>
+          <h3>圧倒的なスピード</h3>
+          <p>業界最速クラスの処理速度で、待ち時間ゼロの快適な体験を実現します。</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">🔒</div>
+          <h3>強固なセキュリティ</h3>
+          <p>エンタープライズグレードの暗号化で、大切なデータを確実に守ります。</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">🤝</div>
+          <h3>充実サポート</h3>
+          <p>専任チームが24時間365日対応。導入から運用まで安心してお任せください。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="section-inner fade-in">
+      <h2 class="section-title">まずは無料でお試しください</h2>
+      <p>クレジットカード不要。今すぐ14日間の無料トライアルを開始できます。</p>
+      <a href="mailto:info@example.com" class="btn-white">お問い合わせ・無料トライアル</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 MyService. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: 0.15 }
+    );
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
