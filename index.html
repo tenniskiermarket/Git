@@ -3,19 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>サービス紹介</title>
+  <title>MyService — 次世代プラットフォーム</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --accent: #2563eb;
-      --accent-dark: #1d4ed8;
-      --text: #111827;
-      --muted: #6b7280;
-      --bg: #ffffff;
-      --bg-alt: #f9fafb;
-      --border: #e5e7eb;
-      --radius: 12px;
+      --bg:           #06060f;
+      --bg-alt:       #0d0d1a;
+      --surface:      #131326;
+      --border:       rgba(99, 102, 241, .25);
+      --accent:       #818cf8;
+      --accent-glow:  #6366f1;
+      --cyan:         #22d3ee;
+      --text:         #f1f5f9;
+      --muted:        #94a3b8;
+      --radius:       14px;
     }
 
     html { scroll-behavior: smooth; }
@@ -25,6 +27,7 @@
       color: var(--text);
       background: var(--bg);
       line-height: 1.6;
+      overflow-x: hidden;
     }
 
     /* ── Nav ── */
@@ -36,83 +39,133 @@
       align-items: center;
       justify-content: space-between;
       padding: 1rem 2rem;
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(8px);
+      background: rgba(6, 6, 15, .75);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
-    .nav-logo { font-size: 1.2rem; font-weight: 700; color: var(--accent); }
+    .nav-logo {
+      font-size: 1.2rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--accent), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
     .nav-cta {
-      background: var(--accent);
+      background: linear-gradient(135deg, var(--accent-glow), #4f46e5);
       color: #fff;
       border: none;
-      padding: .5rem 1.2rem;
+      padding: .5rem 1.3rem;
       border-radius: 999px;
       cursor: pointer;
       font-size: .9rem;
       font-weight: 600;
       text-decoration: none;
-      transition: background .2s;
+      transition: opacity .2s, box-shadow .2s;
+      box-shadow: 0 0 16px rgba(99, 102, 241, .4);
     }
-    .nav-cta:hover { background: var(--accent-dark); }
+    .nav-cta:hover { opacity: .85; box-shadow: 0 0 28px rgba(99, 102, 241, .65); }
 
     /* ── Hero ── */
     #hero {
+      position: relative;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 8rem 1.5rem 4rem;
-      background: linear-gradient(160deg, #eff6ff 0%, #ffffff 60%);
+      padding: 8rem 1.5rem 5rem;
+      overflow: hidden;
+    }
+    /* ドットグリッド背景 */
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(129, 140, 248, .18) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+    /* グロー光源 */
+    #hero::after {
+      content: '';
+      position: absolute;
+      top: -10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(99, 102, 241, .22) 0%, transparent 70%);
+      pointer-events: none;
     }
     .hero-badge {
+      position: relative;
+      z-index: 1;
       display: inline-block;
-      background: #dbeafe;
-      color: var(--accent);
-      font-size: .8rem;
+      background: rgba(99, 102, 241, .15);
+      color: var(--cyan);
+      border: 1px solid rgba(34, 211, 238, .35);
+      font-size: .78rem;
       font-weight: 700;
-      padding: .3rem .9rem;
+      padding: .3rem 1rem;
       border-radius: 999px;
-      margin-bottom: 1.5rem;
-      letter-spacing: .05em;
+      margin-bottom: 1.8rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
     }
     #hero h1 {
-      font-size: clamp(2rem, 6vw, 3.5rem);
+      position: relative;
+      z-index: 1;
+      font-size: clamp(2.2rem, 6vw, 3.8rem);
       font-weight: 900;
-      line-height: 1.2;
+      line-height: 1.15;
       margin-bottom: 1.2rem;
-      letter-spacing: -.02em;
+      letter-spacing: -.03em;
     }
-    #hero h1 span { color: var(--accent); }
+    #hero h1 span {
+      background: linear-gradient(90deg, var(--accent) 0%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
     #hero p {
-      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      position: relative;
+      z-index: 1;
+      font-size: clamp(1rem, 2.5vw, 1.15rem);
       color: var(--muted);
       max-width: 520px;
-      margin-bottom: 2.5rem;
+      margin-bottom: 2.8rem;
     }
     .btn-primary {
-      background: var(--accent);
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(135deg, var(--accent-glow), #4f46e5);
       color: #fff;
-      padding: .9rem 2.4rem;
+      padding: 1rem 2.6rem;
       border-radius: 999px;
       font-size: 1rem;
       font-weight: 700;
       text-decoration: none;
-      transition: background .2s, transform .15s;
+      transition: opacity .2s, transform .15s, box-shadow .2s;
       display: inline-block;
+      box-shadow: 0 0 24px rgba(99, 102, 241, .45);
     }
-    .btn-primary:hover { background: var(--accent-dark); transform: translateY(-2px); }
+    .btn-primary:hover {
+      opacity: .88;
+      transform: translateY(-3px);
+      box-shadow: 0 0 40px rgba(99, 102, 241, .7);
+    }
 
     /* ── Section base ── */
     section { padding: 5rem 1.5rem; }
     .section-inner { max-width: 1000px; margin: 0 auto; }
     .section-label {
       text-align: center;
-      font-size: .8rem;
+      font-size: .75rem;
       font-weight: 700;
-      letter-spacing: .1em;
-      color: var(--accent);
+      letter-spacing: .12em;
+      color: var(--cyan);
       text-transform: uppercase;
       margin-bottom: .8rem;
     }
@@ -121,6 +174,7 @@
       font-size: clamp(1.6rem, 4vw, 2.2rem);
       font-weight: 800;
       margin-bottom: 3rem;
+      letter-spacing: -.02em;
     }
 
     /* ── Features ── */
@@ -131,56 +185,93 @@
       gap: 1.5rem;
     }
     .feature-card {
-      background: var(--bg);
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 2rem;
-      transition: box-shadow .2s, transform .2s;
+      transition: box-shadow .25s, transform .25s, border-color .25s;
     }
-    .feature-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.08); transform: translateY(-4px); }
+    .feature-card:hover {
+      box-shadow: 0 0 32px rgba(34, 211, 238, .18);
+      border-color: rgba(34, 211, 238, .4);
+      transform: translateY(-5px);
+    }
     .feature-icon {
       width: 48px; height: 48px;
-      background: #dbeafe;
+      background: rgba(99, 102, 241, .15);
+      border: 1px solid rgba(99, 102, 241, .3);
       border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
+      font-size: 1.4rem;
+      margin-bottom: 1.1rem;
     }
     .feature-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: .5rem; }
-    .feature-card p { font-size: .95rem; color: var(--muted); }
+    .feature-card p { font-size: .93rem; color: var(--muted); }
 
     /* ── CTA ── */
     #cta {
-      background: linear-gradient(135deg, var(--accent) 0%, #1e40af 100%);
-      color: #fff;
+      background: var(--bg);
       text-align: center;
     }
-    #cta .section-title { color: #fff; }
-    #cta p { color: rgba(255,255,255,.8); margin-bottom: 2rem; font-size: 1.05rem; }
-    .btn-white {
-      background: #fff;
+    .cta-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      bottom: -40%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(99, 102, 241, .14) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    #cta .section-title { position: relative; z-index: 1; }
+    #cta p {
+      position: relative;
+      z-index: 1;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      font-size: 1.05rem;
+    }
+    .btn-outline {
+      position: relative;
+      z-index: 1;
+      background: transparent;
       color: var(--accent);
-      padding: .9rem 2.4rem;
+      border: 1.5px solid var(--accent);
+      padding: .95rem 2.4rem;
       border-radius: 999px;
       font-size: 1rem;
       font-weight: 700;
       text-decoration: none;
-      transition: opacity .2s, transform .15s;
+      transition: background .2s, box-shadow .2s, transform .15s;
       display: inline-block;
     }
-    .btn-white:hover { opacity: .9; transform: translateY(-2px); }
+    .btn-outline:hover {
+      background: rgba(129, 140, 248, .12);
+      box-shadow: 0 0 24px rgba(129, 140, 248, .35);
+      transform: translateY(-2px);
+    }
 
     /* ── Footer ── */
     footer {
-      background: var(--text);
-      color: rgba(255,255,255,.5);
+      background: #030308;
+      color: rgba(255, 255, 255, .3);
       text-align: center;
       padding: 2rem 1rem;
-      font-size: .85rem;
+      font-size: .83rem;
+      border-top: 1px solid var(--border);
     }
 
-    /* ── Fade-in animation ── */
-    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+    /* ── Fade-in ── */
+    .fade-in { opacity: 0; transform: translateY(28px); transition: opacity .65s ease, transform .65s ease; }
     .fade-in.visible { opacity: 1; transform: translateY(0); }
   </style>
 </head>
@@ -194,7 +285,7 @@
 
   <!-- Hero -->
   <section id="hero">
-    <span class="hero-badge">NEW SERVICE</span>
+    <span class="hero-badge">Next Generation Platform</span>
     <h1>あなたのビジネスを<br><span>次のステージへ</span></h1>
     <p>シンプルで強力なツールで、チームの生産性を最大化します。今すぐ始めましょう。</p>
     <a href="#cta" class="btn-primary">無料で始める →</a>
@@ -227,10 +318,12 @@
 
   <!-- CTA -->
   <section id="cta">
-    <div class="section-inner fade-in">
-      <h2 class="section-title">まずは無料でお試しください</h2>
-      <p>クレジットカード不要。今すぐ14日間の無料トライアルを開始できます。</p>
-      <a href="mailto:info@example.com" class="btn-white">お問い合わせ・無料トライアル</a>
+    <div class="section-inner">
+      <div class="cta-box fade-in">
+        <h2 class="section-title">まずは無料でお試しください</h2>
+        <p>クレジットカード不要。今すぐ14日間の無料トライアルを開始できます。</p>
+        <a href="mailto:info@example.com" class="btn-outline">お問い合わせ・無料トライアル</a>
+      </div>
     </div>
   </section>
 
