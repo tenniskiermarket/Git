@@ -679,6 +679,291 @@
       .day-cell { min-height: 52px; }
       .day-num { font-size: .62rem; }
     }
+
+    /* ── Weekly Analysis ────────────────────────── */
+    #analysis-btn {
+      background: transparent;
+      border: 1px solid var(--neon-yellow);
+      color: var(--neon-yellow);
+      padding: .3rem .9rem;
+      border-radius: 0;
+      font-size: .75rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+      position: relative;
+      transition: background .2s, box-shadow .2s;
+    }
+    #analysis-btn:hover {
+      background: rgba(240,255,0,.1);
+      box-shadow: 0 0 16px rgba(240,255,0,.4);
+    }
+    .notify-dot {
+      position: absolute;
+      top: -5px; right: -5px;
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent);
+      display: none;
+    }
+    .notify-dot.active {
+      display: block;
+      animation: border-pulse 1.5s ease-in-out infinite;
+    }
+
+    #notify-banner {
+      background: rgba(255,0,170,.08);
+      border-bottom: 1px solid rgba(255,0,170,.3);
+      padding: .5rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: .78rem;
+      color: var(--accent);
+      text-shadow: 0 0 8px rgba(255,0,170,.3);
+      flex-shrink: 0;
+      gap: 1rem;
+    }
+    #notify-banner.hidden { display: none; }
+    .notify-actions { display: flex; gap: .5rem; flex-shrink: 0; }
+    .notify-actions button {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: .2rem .6rem;
+      font-size: .72rem;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: .06em;
+      transition: background .2s;
+    }
+    .notify-actions button:hover { background: rgba(255,0,170,.2); }
+
+    #analysis-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.85);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    #analysis-modal.hidden { display: none; }
+
+    #analysis-modal-inner {
+      background: var(--bg-alt);
+      border: 1px solid var(--neon-yellow);
+      box-shadow: 0 0 50px rgba(240,255,0,.15), inset 0 0 30px rgba(240,255,0,.02);
+      width: min(720px, 96vw);
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    }
+
+    #analysis-modal-header {
+      padding: 1rem 1.4rem .8rem;
+      border-bottom: 1px solid rgba(240,255,0,.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      background: rgba(240,255,0,.03);
+    }
+    #analysis-modal-header h2 {
+      font-family: 'Orbitron', monospace;
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--neon-yellow);
+      text-shadow: 0 0 12px rgba(240,255,0,.5);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+    .btn-close-modal {
+      background: none;
+      border: 1px solid var(--muted);
+      color: var(--muted);
+      font-size: 1rem;
+      cursor: pointer;
+      padding: .1rem .4rem;
+      border-radius: 0;
+      transition: color .2s, border-color .2s, box-shadow .2s;
+    }
+    .btn-close-modal:hover {
+      color: var(--danger);
+      border-color: var(--danger);
+      box-shadow: 0 0 10px rgba(255,0,60,.3);
+    }
+
+    #period-selector {
+      padding: .7rem 1.4rem;
+      border-bottom: 1px solid rgba(240,255,0,.15);
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .period-label {
+      font-size: .65rem;
+      color: var(--muted);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      font-family: 'Orbitron', monospace;
+      margin-right: .2rem;
+    }
+    .period-btn {
+      background: transparent;
+      border: 1px solid rgba(240,255,0,.25);
+      color: rgba(240,255,0,.5);
+      padding: .25rem .75rem;
+      font-size: .72rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: .06em;
+      transition: all .2s;
+      clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+    }
+    .period-btn.active {
+      background: rgba(240,255,0,.1);
+      border-color: var(--neon-yellow);
+      color: var(--neon-yellow);
+      box-shadow: 0 0 10px rgba(240,255,0,.25);
+    }
+    .period-btn:hover:not(.active) {
+      border-color: rgba(240,255,0,.5);
+      color: rgba(240,255,0,.8);
+    }
+
+    #analysis-content {
+      overflow-y: auto;
+      flex: 1;
+      padding: 1rem 1.4rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+    }
+
+    .analysis-section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: .65rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-shadow: 0 0 8px rgba(0,255,200,.4);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: .6rem;
+    }
+
+    /* Analysis mini calendar */
+    .acal-dow-row {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 3px;
+    }
+    .acal-dow-cell {
+      width: 38px;
+      text-align: center;
+      font-size: .58rem;
+      font-family: 'Orbitron', monospace;
+      color: var(--muted);
+      padding: .15rem 0;
+      flex-shrink: 0;
+    }
+    .acal-dow-cell:first-child { color: #ff4466; }
+    .acal-dow-cell:last-child  { color: var(--accent); }
+
+    .acal-week-row { display: flex; gap: 3px; margin-bottom: 3px; }
+
+    .acal-day {
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(0,255,200,.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: .6rem;
+      font-family: 'Orbitron', monospace;
+      cursor: pointer;
+      transition: border-color .15s, transform .1s;
+      position: relative;
+      flex-shrink: 0;
+      color: var(--muted);
+    }
+    .acal-day:hover { border-color: var(--cyan); transform: scale(1.08); z-index:1; }
+    .acal-day.acal-has-entry {
+      border-color: rgba(0,255,200,.4);
+      background: rgba(0,255,200,.06);
+      color: var(--cyan);
+    }
+    .acal-day.acal-today {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 8px rgba(255,0,170,.3);
+    }
+    .acal-day.acal-empty { opacity: 0; pointer-events: none; }
+    .acal-dot {
+      width: 4px; height: 4px;
+      background: var(--accent);
+      transform: rotate(45deg);
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    /* Stats */
+    #analysis-stats { display: flex; gap: .8rem; flex-wrap: wrap; }
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid rgba(0,255,200,.15);
+      padding: .7rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .2rem;
+      min-width: 88px;
+    }
+    .stat-val {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-shadow: 0 0 12px rgba(0,255,200,.5);
+      line-height: 1;
+    }
+    .stat-lbl {
+      font-size: .58rem;
+      color: var(--muted);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    /* Keywords */
+    #analysis-keywords { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .keyword-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      background: rgba(240,255,0,.06);
+      border: 1px solid rgba(240,255,0,.25);
+      color: var(--neon-yellow);
+      font-size: .72rem;
+      padding: .2rem .65rem;
+      clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+      text-shadow: 0 0 6px rgba(240,255,0,.3);
+    }
+    .keyword-count {
+      font-size: .6rem;
+      color: rgba(240,255,0,.45);
+      font-family: 'Orbitron', monospace;
+    }
   </style>
 </head>
 <body>
@@ -692,8 +977,18 @@
       <span id="month-label"></span>
       <button class="nav-btn" id="btn-next" title="次の月">&#8250;</button>
       <button class="btn-today" id="btn-today">今日</button>
+      <button id="analysis-btn">週次分析<span class="notify-dot" id="notify-dot"></span></button>
     </div>
   </header>
+
+  <!-- 7日記録達成通知バナー -->
+  <div id="notify-banner" class="hidden">
+    <span>📊 7日分の記録が揃いました！週次分析で振り返りましょう。</span>
+    <div class="notify-actions">
+      <button id="notify-open-btn">分析を開く</button>
+      <button id="notify-dismiss-btn">後で</button>
+    </div>
+  </div>
 
   <div id="app-layout">
 
@@ -757,6 +1052,37 @@
     </aside>
 
   </div><!-- #app-layout -->
+
+  <!-- Weekly Analysis Modal -->
+  <div id="analysis-modal" class="hidden">
+    <div id="analysis-modal-inner">
+      <div id="analysis-modal-header">
+        <h2>週次分析</h2>
+        <button class="btn-close-modal" id="btn-close-analysis">✕</button>
+      </div>
+      <div id="period-selector">
+        <span class="period-label">期間：</span>
+        <button class="period-btn active" data-weeks="1">1週間</button>
+        <button class="period-btn" data-weeks="2">2週間</button>
+        <button class="period-btn" data-weeks="3">3週間</button>
+        <button class="period-btn" data-weeks="4">4週間</button>
+      </div>
+      <div id="analysis-content">
+        <div>
+          <p class="analysis-section-title">カレンダー</p>
+          <div id="analysis-cal"></div>
+        </div>
+        <div>
+          <p class="analysis-section-title">統計</p>
+          <div id="analysis-stats"></div>
+        </div>
+        <div>
+          <p class="analysis-section-title">よく出たキーワード</p>
+          <div id="analysis-keywords"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
   (function () {
@@ -1168,7 +1494,10 @@
       state.viewYear  = t.getFullYear();
       state.viewMonth = t.getMonth();
       renderCalendar();
-      openDay(todayKey());
+      // パネルが開いていれば今日に切り替え、閉じていれば月表示だけ更新
+      if (!document.getElementById('detail-panel').classList.contains('hidden-panel')) {
+        openDay(todayKey());
+      }
     });
 
     // パネルを閉じる
@@ -1205,6 +1534,206 @@
       if (btn) removeTag(btn.dataset.tag);
     });
 
+    // ── 週次分析 ───────────────────────────────────
+    const ANALYSIS_DISMISS_KEY = 'lifelog_analysis_dismissed_v1';
+    let analysisWeeks = 1;
+
+    const STOP_WORDS = new Set([
+      'の','に','は','を','が','で','と','も','から','まで','より','へ',
+      'こと','これ','それ','あれ','どれ','する','した','して','ある','いる',
+      'なる','できる','という','では','この','その','あの','ため','ように',
+      'また','さらに','しかし','ただ','ちょっと','あまり','など','ます',
+      'です','でした','ました','ません','ください','あった','いた','なった',
+      'して','から','だった','だから','でも','けど','けれど','でも',
+    ]);
+
+    function checkNotification() {
+      const dismissed = localStorage.getItem(ANALYSIS_DISMISS_KEY);
+      if (dismissed === todayKey()) return;
+
+      // 直近7日間すべてにコンテンツがあるか確認
+      const now = new Date();
+      let cnt = 0;
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        const k = dateKey(d.getFullYear(), d.getMonth(), d.getDate());
+        const e = state.data[k];
+        if (e && (e.note || e.photo || (e.tags && e.tags.length))) cnt++;
+      }
+      if (cnt >= 7) {
+        document.getElementById('notify-banner').classList.remove('hidden');
+        document.getElementById('notify-dot').classList.add('active');
+      }
+    }
+
+    function dismissNotification() {
+      document.getElementById('notify-banner').classList.add('hidden');
+      localStorage.setItem(ANALYSIS_DISMISS_KEY, todayKey());
+    }
+
+    function openAnalysis() {
+      document.getElementById('analysis-modal').classList.remove('hidden');
+      renderAnalysis();
+    }
+
+    function closeAnalysis() {
+      document.getElementById('analysis-modal').classList.add('hidden');
+    }
+
+    function renderAnalysis() {
+      const weeks = analysisWeeks;
+      const days  = weeks * 7;
+      const now   = new Date();
+
+      // 期間開始日（今日含むdays日前）
+      const start = new Date(now);
+      start.setDate(start.getDate() - days + 1);
+      start.setHours(0,0,0,0);
+
+      renderAnalysisCalendar(start, days);
+
+      // 集計
+      let entryCnt = 0, photoCnt = 0;
+      const tagSet = new Set();
+      const wordFreq = {};
+
+      for (let i = 0; i < days; i++) {
+        const d = new Date(start);
+        d.setDate(start.getDate() + i);
+        const k = dateKey(d.getFullYear(), d.getMonth(), d.getDate());
+        const entry = state.data[k];
+        if (!entry) continue;
+        const hasContent = entry.note || entry.photo || (entry.tags && entry.tags.length);
+        if (!hasContent) continue;
+
+        entryCnt++;
+        if (entry.photo) photoCnt++;
+
+        // タグ（重み2）
+        if (entry.tags) {
+          entry.tags.forEach(t => {
+            tagSet.add(t);
+            wordFreq[t] = (wordFreq[t] || 0) + 2;
+          });
+        }
+
+        // ノートから単語抽出
+        if (entry.note) {
+          entry.note
+            .split(/[\s\u3000、。！？!?,.…\n「」【】『』【】\(\)（）]+/)
+            .map(w => w.trim())
+            .filter(w => w.length >= 2 && w.length <= 12 && !STOP_WORDS.has(w) && /[^\d]/.test(w))
+            .forEach(w => { wordFreq[w] = (wordFreq[w] || 0) + 1; });
+        }
+      }
+
+      // 統計
+      const pct = days > 0 ? Math.round(entryCnt / days * 100) : 0;
+      document.getElementById('analysis-stats').innerHTML = `
+        <div class="stat-box"><span class="stat-val">${entryCnt}</span><span class="stat-lbl">記録日数</span></div>
+        <div class="stat-box"><span class="stat-val">${days}</span><span class="stat-lbl">対象日数</span></div>
+        <div class="stat-box"><span class="stat-val">${pct}%</span><span class="stat-lbl">達成率</span></div>
+        <div class="stat-box"><span class="stat-val">${photoCnt}</span><span class="stat-lbl">写真あり</span></div>
+        <div class="stat-box"><span class="stat-val">${tagSet.size}</span><span class="stat-lbl">タグ種類</span></div>
+      `;
+
+      // キーワード上位20件
+      const kwEl = document.getElementById('analysis-keywords');
+      const sorted = Object.entries(wordFreq).sort((a,b) => b[1]-a[1]).slice(0, 20);
+      if (sorted.length === 0) {
+        kwEl.innerHTML = '<span style="color:var(--muted);font-size:.82rem;letter-spacing:.06em;">キーワードなし</span>';
+      } else {
+        kwEl.innerHTML = sorted.map(([w, cnt]) =>
+          `<span class="keyword-chip">${escHtml(w)}<span class="keyword-count">×${cnt}</span></span>`
+        ).join('');
+      }
+    }
+
+    function renderAnalysisCalendar(start, days) {
+      const tk = todayKey();
+      const dow = ['日','月','火','水','木','金','土'];
+
+      // 曜日ヘッダー
+      let html = `<div class="acal-dow-row">${dow.map((d,i) =>
+        `<div class="acal-dow-cell" style="${i===0?'color:#ff4466':i===6?'color:var(--accent)':''}">${d}</div>`
+      ).join('')}</div>`;
+
+      // 開始曜日でパディング
+      let row = [];
+      const startDow = start.getDay();
+      for (let i = 0; i < startDow; i++) row.push(null);
+
+      for (let i = 0; i < days; i++) {
+        const d = new Date(start);
+        d.setDate(start.getDate() + i);
+        row.push(d);
+        if (row.length === 7) {
+          html += renderAnalysisWeekRow(row, tk);
+          row = [];
+        }
+      }
+      if (row.length > 0) {
+        while (row.length < 7) row.push(null);
+        html += renderAnalysisWeekRow(row, tk);
+      }
+
+      document.getElementById('analysis-cal').innerHTML = html;
+    }
+
+    function renderAnalysisWeekRow(row, tk) {
+      let html = '<div class="acal-week-row">';
+      row.forEach(d => {
+        if (!d) { html += '<div class="acal-day acal-empty"></div>'; return; }
+        const k = dateKey(d.getFullYear(), d.getMonth(), d.getDate());
+        const entry = state.data[k];
+        const hasContent = entry && (entry.note || entry.photo || (entry.tags && entry.tags.length));
+        const isToday = k === tk;
+
+        let cls = 'acal-day';
+        if (isToday) cls += ' acal-today';
+        else if (hasContent) cls += ' acal-has-entry';
+
+        const dot = hasContent ? '<div class="acal-dot"></div>' : '';
+        html += `<div class="${cls}" data-key="${k}"><span>${d.getDate()}</span>${dot}</div>`;
+      });
+      return html + '</div>';
+    }
+
+    // 分析カレンダークリック（イベント委譲）
+    document.getElementById('analysis-cal').addEventListener('click', e => {
+      const cell = e.target.closest('[data-key]');
+      if (!cell) return;
+      const k = cell.dataset.key;
+      const [y, m] = k.split('-').map(Number);
+      state.viewYear  = y;
+      state.viewMonth = m - 1;
+      closeAnalysis();
+      renderCalendar();
+      openDay(k);
+    });
+
+    // 分析モーダルイベント
+    document.getElementById('analysis-btn').addEventListener('click', openAnalysis);
+    document.getElementById('btn-close-analysis').addEventListener('click', closeAnalysis);
+    document.getElementById('analysis-modal').addEventListener('click', e => {
+      if (e.target.id === 'analysis-modal') closeAnalysis();
+    });
+    document.getElementById('notify-open-btn').addEventListener('click', () => {
+      dismissNotification();
+      openAnalysis();
+    });
+    document.getElementById('notify-dismiss-btn').addEventListener('click', dismissNotification);
+
+    document.querySelectorAll('.period-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        analysisWeeks = parseInt(btn.dataset.weeks);
+        renderAnalysis();
+      });
+    });
+
     // ── 初期化 ─────────────────────────────────────
     function init() {
       state.data = load();
@@ -1212,8 +1741,8 @@
       state.viewYear  = t.getFullYear();
       state.viewMonth = t.getMonth();
       renderCalendar();
-      // 今日を自動で開く
       openDay(todayKey());
+      checkNotification();
     }
 
     init();
