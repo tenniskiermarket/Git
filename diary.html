@@ -32,6 +32,7 @@
       --radius:      12px;
       --radius-sm:   8px;
       --safe-b:      env(safe-area-inset-bottom, 0px);
+      --safe-t:      env(safe-area-inset-top, 0px);
     }
 
     /* ===== リセット ===== */
@@ -58,6 +59,7 @@
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
       padding: 12px 16px;
+      padding-top: calc(12px + var(--safe-t));
       display: flex;
       align-items: center;
       gap: 8px;
