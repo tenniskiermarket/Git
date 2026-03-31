@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C c:/Git show 5fdb05f:plans/fluffy-napping-mist.md)",
+      "Bash(git -C c:/Git log --all --oneline --diff-filter=D --name-only)",
+      "Bash(git -C c:/Git show HEAD:memo.html)"
+    ]
+  }
+}
