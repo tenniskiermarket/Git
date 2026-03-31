@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>メタ認知日記</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <style>
+    /* ===== デザイントークン ===== */
+    :root {
+      --bg:          #020208;
+      --bg-alt:      #05050f;
+      --surface:     #0a0a18;
+      --surface2:    #0f0f22;
+      --surface3:    #141428;
+      --border:      rgba(99, 102, 241, 0.25);
+      --border-cyan: rgba(0, 255, 200, 0.18);
+      --accent:      #818cf8;
+      --accent-dark: #6366f1;
+      --accent-glow: rgba(129, 140, 248, 0.35);
+      --cyan:        #22d3ee;
+      --cyan-glow:   rgba(34, 211, 238, 0.25);
+      --green:       #4ade80;
+      --yellow:      #fbbf24;
+      --red:         #f87171;
+      --text:        #f1f5f9;
+      --text-sub:    #cbd5e1;
+      --muted:       #64748b;
+      --radius:      12px;
+      --radius-sm:   8px;
+      --safe-b:      env(safe-area-inset-bottom, 0px);
+    }
+
+    /* ===== リセット ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; }
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      padding-bottom: calc(72px + var(--safe-b));
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== ヘッダー ===== */
+    #app-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(2, 2, 8, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #header-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      text-shadow: 0 0 12px var(--accent-glow);
+    }
+    #date-nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      justify-content: center;
+    }
+    .nav-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      border-radius: var(--radius-sm);
+      min-width: 40px;
+      min-height: 40px;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .nav-btn:active { background: var(--surface3); color: var(--accent); }
+    #date-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      min-width: 160px;
+      text-align: center;
+      line-height: 1.3;
+    }
+    #date-label small {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+    #today-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 0 12px;
+      min-height: 40px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, border-color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #today-btn:active { background: var(--surface3); }
+    #today-btn.is-today {
+      color: var(--muted);
+      border-color: transparent;
+    }
+
+    /* ===== タブバー ===== */
+    #tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 600px;
+      height: calc(64px + var(--safe-b));
+      display: flex;
+      background: rgba(2, 2, 8, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border);
+      z-index: 100;
+      padding-bottom: var(--safe-b);
+    }
+    .tab-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 11px;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 500;
+      transition: color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tab-btn .tab-icon { font-size: 22px; line-height: 1; }
+    .tab-btn.active { color: var(--accent); }
+    .tab-btn.active .tab-icon {
+      filter: drop-shadow(0 0 6px var(--accent-glow));
+    }
+
+    /* ===== メインコンテンツ ===== */
+    #main-content { padding: 16px; }
+    .view { display: none; animation: fadeIn 0.2s ease; }
+    .view.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== 状態バッジ ===== */
+    #status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    #status-badge.empty {
+      background: rgba(100, 116, 139, 0.15);
+      border: 1px solid var(--muted);
+      color: var(--muted);
+    }
+    #status-badge.filled {
+      background: rgba(74, 222, 128, 0.1);
+      border: 1px solid rgba(74, 222, 128, 0.4);
+      color: var(--green);
+    }
+    #status-badge .badge-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ===== フィールドカード ===== */
+    .field-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+    .field-card:focus-within {
+      border-color: var(--accent-dark);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.12);
+    }
+    .field-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 8px;
+      display: block;
+    }
+    .field-label .field-icon { margin-right: 4px; }
+    textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      color: var(--text);
+      font-size: 16px;
+      font-family: 'Noto Sans JP', sans-serif;
+      line-height: 1.7;
+      min-height: 72px;
+      overflow: hidden;
+    }
+    textarea::placeholder { color: var(--muted); }
+
+    /* ===== 保存エリア ===== */
+    #save-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 4px;
+      padding-top: 4px;
+    }
+    #save-btn {
+      flex: 1;
+      background: var(--accent-dark);
+      border: none;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Noto Sans JP', sans-serif;
+      padding: 14px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      box-shadow: 0 0 16px rgba(99, 102, 241, 0.3);
+      transition: background 0.15s, box-shadow 0.15s, opacity 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #save-btn:active { background: #4f52c4; }
+    #save-btn.empty { opacity: 0.4; }
+    #save-indicator {
+      font-size: 13px;
+      color: var(--green);
+      opacity: 0;
+      transition: opacity 0.3s;
+      white-space: nowrap;
+    }
+    #save-indicator.show { opacity: 1; }
+
+    /* ===== 週次分析タブ ===== */
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-shadow: 0 0 10px var(--cyan-glow);
+    }
+    .section-title .s-icon { font-size: 16px; }
+
+    /* 期間セレクタ */
+    #period-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .period-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: var(--radius-sm);
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Noto Sans JP', sans-serif;
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .period-btn.active {
+      background: rgba(99, 102, 241, 0.18);
+      border-color: var(--accent-dark);
+      color: var(--accent);
+    }
+    .period-btn:active { background: var(--surface3); }
+
+    /* 統計サマリー */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .stat-item {
+      background: var(--surface2);
+      border: 1px solid var(--border-cyan);
+      border-radius: var(--radius-sm);
+      padding: 12px 8px;
+      text-align: center;
+    }
+    .stat-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 20px;
+      color: var(--accent);
+      text-shadow: 0 0 10px var(--accent-glow);
+      line-height: 1.2;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ヒートバー */
+    #heat-bar-wrap {
+      margin-top: 14px;
+    }
+    #heat-bar-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    #heat-bar {
+      display: flex;
+      gap: 4px;
+    }
+    .heat-cell {
+      flex: 1;
+      height: 28px;
+      border-radius: 4px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: background 0.2s;
+    }
+    .heat-cell.has-data { background: rgba(99, 102, 241, 0.35); border-color: var(--accent-dark); }
+    .heat-cell.is-today { border-color: var(--cyan); box-shadow: 0 0 6px var(--cyan-glow); }
+    .heat-cell-day {
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 9px;
+      color: var(--muted);
+    }
+    .heat-cell.has-data .heat-cell-day { color: var(--accent); }
+
+    /* obstacles一覧 */
+    #obstacles-list { display: flex; flex-direction: column; gap: 10px; }
+    .obstacle-item {
+      background: var(--surface2);
+      border: 1px solid var(--border-cyan);
+      border-left: 3px solid var(--cyan);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+    .obstacle-date {
+      font-size: 11px;
+      color: var(--cyan);
+      font-weight: 700;
+      margin-bottom: 4px;
+      text-shadow: 0 0 8px var(--cyan-glow);
+    }
+    .obstacle-text {
+      font-size: 14px;
+      color: var(--text-sub);
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .no-obstacles {
+      text-align: center;
+      padding: 24px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* キーワードチップ */
+    #keyword-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .keyword-chip {
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 100px;
+      padding: 5px 12px;
+      font-size: 13px;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: chipIn 0.2s ease both;
+    }
+    .keyword-chip .chip-count {
+      background: var(--accent-dark);
+      color: #fff;
+      border-radius: 100px;
+      padding: 1px 7px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'Orbitron', sans-serif;
+    }
+    @keyframes chipIn {
+      from { opacity: 0; transform: scale(0.85); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .no-keywords {
+      font-size: 13px;
+      color: var(--muted);
+      padding: 8px 0;
+    }
+
+    /* スクロールバー */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- ===== ヘッダー ===== -->
+<header id="app-header">
+  <span id="header-title">META DIARY</span>
+  <nav id="date-nav">
+    <button class="nav-btn" id="prev-btn" aria-label="前の日">‹</button>
+    <div id="date-label">
+      <span id="date-main">読み込み中...</span>
+      <small id="date-sub"></small>
+    </div>
+    <button class="nav-btn" id="next-btn" aria-label="次の日">›</button>
+  </nav>
+  <button id="today-btn">今日</button>
+</header>
+
+<!-- ===== メインコンテンツ ===== -->
+<main id="main-content">
+
+  <!-- タブ1: 日記入力 -->
+  <div id="view-diary" class="view active">
+    <div id="status-badge" class="empty">
+      <span class="badge-dot"></span>
+      <span id="status-text">未記入</span>
+    </div>
+
+    <div class="field-card">
+      <label class="field-label" for="field-goal">
+        <span class="field-icon">🎯</span>本日の目標
+      </label>
+      <textarea id="field-goal" placeholder="今日達成したいことは？"></textarea>
+    </div>
+
+    <div class="field-card">
+      <label class="field-label" for="field-done">
+        <span class="field-icon">✅</span>実際にやった事・得られた成果
+      </label>
+      <textarea id="field-done" placeholder="実際に取り組んだこと、得られた成果を書こう"></textarea>
+    </div>
+
+    <div class="field-card">
+      <label class="field-label" for="field-obstacles">
+        <span class="field-icon">🧱</span>ぶつかった壁・詰まったポイント
+      </label>
+      <textarea id="field-obstacles" placeholder="何が難しかった？どこで詰まった？"></textarea>
+    </div>
+
+    <div class="field-card">
+      <label class="field-label" for="field-tomorrow">
+        <span class="field-icon">🔄</span>明日変える事
+      </label>
+      <textarea id="field-tomorrow" placeholder="明日はどうアプローチを変える？"></textarea>
+    </div>
+
+    <div id="save-area">
+      <button id="save-btn">保存する</button>
+      <span id="save-indicator">✓ 保存済み</span>
+    </div>
+  </div>
+
+  <!-- タブ2: 週次分析 -->
+  <div id="view-analysis" class="view">
+    <div id="period-selector">
+      <button class="period-btn active" data-days="7">7日</button>
+      <button class="period-btn" data-days="14">14日</button>
+      <button class="period-btn" data-days="21">21日</button>
+      <button class="period-btn" data-days="28">28日</button>
+    </div>
+
+    <!-- 統計サマリー -->
+    <div class="section-card">
+      <div class="section-title"><span class="s-icon">📈</span>記録サマリー</div>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-num" id="stat-recorded">-</div>
+          <div class="stat-label">記録日数</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" id="stat-rate">-%</div>
+          <div class="stat-label">達成率</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" id="stat-streak">-</div>
+          <div class="stat-label">連続日数</div>
+        </div>
+      </div>
+      <div id="heat-bar-wrap">
+        <div id="heat-bar-label">記録ヒートバー</div>
+        <div id="heat-bar"></div>
+      </div>
+    </div>
+
+    <!-- ぶつかった壁 一覧 -->
+    <div class="section-card">
+      <div class="section-title"><span class="s-icon">🧱</span>ぶつかった壁・一覧</div>
+      <div id="obstacles-list"></div>
+    </div>
+
+    <!-- キーワード頻度 -->
+    <div class="section-card">
+      <div class="section-title"><span class="s-icon">🔍</span>繰り返しパターン（キーワード）</div>
+      <div id="keyword-chips"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ===== タブバー ===== -->
+<nav id="tab-bar">
+  <button class="tab-btn active" data-tab="diary">
+    <span class="tab-icon">✏️</span>
+    <span>日記</span>
+  </button>
+  <button class="tab-btn" data-tab="analysis">
+    <span class="tab-icon">📊</span>
+    <span>週次分析</span>
+  </button>
+</nav>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ===== 定数 ===== */
+  const STORAGE_KEY    = 'diary_v1';
+  const AUTOSAVE_DELAY = 700;
+  const WEEKDAYS       = ['日','月','火','水','木','金','土'];
+
+  const STOP_WORDS = new Set([
+    'の','に','は','を','が','で','と','も','から','まで','より','へ','や','な',
+    'こと','これ','それ','あれ','どれ','もの','ところ','ため','よう','わけ',
+    'する','した','して','しては','しても','ている','ていた','ていて','てしまう','てしまった',
+    'いる','いた','いて','ある','あった','あって','なる','なった','なって',
+    'できる','できた','できて','できない','できなかった',
+    'という','では','この','その','あの','これら','それら',
+    'また','さらに','しかし','ただ','ちょっと','あまり','など','とか','たり',
+    'ます','です','でした','ました','ません','ください',
+    'だった','だから','でも','けど','けれど','ので','のに','から','ため',
+    'どう','いう','ない','なかった','ように','ために','として','について',
+    'よく','まだ','もう','ずっと','少し','すごく','かなり','とても','特に',
+  ]);
+
+  /* ===== ステート ===== */
+  const state = {
+    data:         {},
+    currentDate:  '',
+    activeTab:    'diary',
+    analysisDays: 7,
+  };
+
+  let autosaveTimer = null;
+
+  /* ===== Storage層 ===== */
+  function loadData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      state.data = raw ? JSON.parse(raw) : {};
+    } catch (_) {
+      state.data = {};
+    }
+  }
+
+  function saveData() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+    } catch (e) {
+      alert('保存容量が不足しています。古いデータを整理してください。');
+    }
+  }
+
+  function getEntry(key) {
+    return state.data[key] || { goal: '', done: '', obstacles: '', tomorrow: '', updatedAt: 0 };
+  }
+
+  /* ===== 日付ユーティリティ ===== */
+  function toDateKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  function todayKey() {
+    return toDateKey(new Date());
+  }
+
+  function offsetDate(key, delta) {
+    const [y, m, d] = key.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    date.setDate(date.getDate() + delta);
+    return toDateKey(date);
+  }
+
+  function formatDateLabel(key) {
+    const [y, m, d] = key.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    const wd = WEEKDAYS[date.getDay()];
+    return {
+      main: `${y}年${m}月${d}日（${wd}）`,
+      sub:  key === todayKey() ? '今日' : '',
+    };
+  }
+
+  function escHtml(s) {
+    return s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  /* ===== 日記入力画面 ===== */
+  function renderDiaryView() {
+    const entry = getEntry(state.currentDate);
+    document.getElementById('field-goal').value      = entry.goal;
+    document.getElementById('field-done').value      = entry.done;
+    document.getElementById('field-obstacles').value = entry.obstacles;
+    document.getElementById('field-tomorrow').value  = entry.tomorrow;
+    autoResizeAll();
+    updateStatusBadge();
+    updateSaveBtn();
+  }
+
+  function updateHeader() {
+    const label = formatDateLabel(state.currentDate);
+    document.getElementById('date-main').textContent = label.main;
+    document.getElementById('date-sub').textContent  = label.sub;
+
+    const isToday = state.currentDate === todayKey();
+    const todayBtn = document.getElementById('today-btn');
+    todayBtn.classList.toggle('is-today', isToday);
+
+    // 翌日ボタンは今日より先には行けない
+    document.getElementById('next-btn').disabled = isToday;
+    document.getElementById('next-btn').style.opacity = isToday ? '0.3' : '1';
+  }
+
+  function scheduleAutosave() {
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(() => {
+      saveCurrentEntry();
+      showSaveIndicator();
+    }, AUTOSAVE_DELAY);
+  }
+
+  function saveCurrentEntry() {
+    const entry = {
+      goal:      document.getElementById('field-goal').value,
+      done:      document.getElementById('field-done').value,
+      obstacles: document.getElementById('field-obstacles').value,
+      tomorrow:  document.getElementById('field-tomorrow').value,
+      updatedAt: Date.now(),
+    };
+    const hasContent = entry.goal || entry.done || entry.obstacles || entry.tomorrow;
+    if (hasContent) {
+      state.data[state.currentDate] = entry;
+    } else {
+      delete state.data[state.currentDate];
+    }
+    saveData();
+    updateStatusBadge();
+    updateSaveBtn();
+  }
+
+  function showSaveIndicator() {
+    const el = document.getElementById('save-indicator');
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  }
+
+  function hasEntryContent(key) {
+    const e = state.data[key];
+    return e && (e.goal || e.done || e.obstacles || e.tomorrow);
+  }
+
+  function updateStatusBadge() {
+    const badge = document.getElementById('status-badge');
+    const text  = document.getElementById('status-text');
+    const filled = hasEntryContent(state.currentDate);
+    badge.classList.toggle('filled', !!filled);
+    badge.classList.toggle('empty',  !filled);
+    text.textContent = filled ? '記入済み' : '未記入';
+  }
+
+  function updateSaveBtn() {
+    const btn = document.getElementById('save-btn');
+    const fields = ['field-goal','field-done','field-obstacles','field-tomorrow'];
+    const hasValue = fields.some(id => document.getElementById(id).value.trim());
+    btn.classList.toggle('empty', !hasValue);
+  }
+
+  function autoResizeTextarea(ta) {
+    ta.style.height = 'auto';
+    ta.style.height = ta.scrollHeight + 'px';
+  }
+
+  function autoResizeAll() {
+    document.querySelectorAll('textarea').forEach(autoResizeTextarea);
+  }
+
+  /* ===== 週次分析 ===== */
+  function renderAnalysisView() {
+    const days = state.analysisDays;
+    const entries = collectObstaclesData(days);
+
+    renderAnalysisStats(days, entries);
+    renderHeatBar(days);
+    renderObstaclesList(entries);
+    renderKeywordChips(entries);
+  }
+
+  function renderAnalysisStats(days, entries) {
+    const recorded = countRecordedDays(days);
+    const rate     = Math.round((recorded / days) * 100);
+    const streak   = calcStreak();
+
+    document.getElementById('stat-recorded').textContent = `${recorded}/${days}`;
+    document.getElementById('stat-rate').textContent     = `${rate}%`;
+    document.getElementById('stat-streak').textContent   = `${streak}日`;
+  }
+
+  function countRecordedDays(days) {
+    let count = 0;
+    const now = new Date();
+    for (let i = 0; i < days; i++) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      if (hasEntryContent(toDateKey(d))) count++;
+    }
+    return count;
+  }
+
+  function renderHeatBar(days) {
+    const bar   = document.getElementById('heat-bar');
+    const today = todayKey();
+    bar.innerHTML = '';
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = toDateKey(d);
+      const cell = document.createElement('div');
+      cell.className = 'heat-cell';
+      if (hasEntryContent(key)) cell.classList.add('has-data');
+      if (key === today)        cell.classList.add('is-today');
+      const dayLabel = document.createElement('span');
+      dayLabel.className = 'heat-cell-day';
+      dayLabel.textContent = WEEKDAYS[d.getDay()];
+      cell.appendChild(dayLabel);
+      bar.appendChild(cell);
+    }
+  }
+
+  function collectObstaclesData(days) {
+    const entries = [];
+    const now = new Date();
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const key   = toDateKey(d);
+      const entry = state.data[key];
+      if (entry && entry.obstacles && entry.obstacles.trim()) {
+        entries.push({ key, date: d, text: entry.obstacles });
+      }
+    }
+    return entries;
+  }
+
+  function renderObstaclesList(entries) {
+    const list = document.getElementById('obstacles-list');
+    if (entries.length === 0) {
+      list.innerHTML = '<div class="no-obstacles">記録された「ぶつかった壁」はありません</div>';
+      return;
+    }
+    list.innerHTML = entries.map(({ key, text }) => {
+      const [y, m, d] = key.split('-').map(Number);
+      const date  = new Date(y, m - 1, d);
+      const label = `${m}月${d}日（${WEEKDAYS[date.getDay()]}）`;
+      return `
+        <div class="obstacle-item">
+          <div class="obstacle-date">${escHtml(label)}</div>
+          <div class="obstacle-text">${escHtml(text)}</div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderKeywordChips(entries) {
+    const container = document.getElementById('keyword-chips');
+    const freq = buildWordFrequency(entries);
+    if (freq.length === 0) {
+      container.innerHTML = '<div class="no-keywords">キーワードデータがありません</div>';
+      return;
+    }
+    // 頻度が2回以上のものだけチップ表示。なければ全部表示
+    const filtered = freq.filter(([, c]) => c >= 2);
+    const display  = filtered.length > 0 ? filtered : freq.slice(0, 10);
+    container.innerHTML = display.map(([word, count], i) => `
+      <div class="keyword-chip" style="animation-delay:${i * 0.03}s">
+        <span>${escHtml(word)}</span>
+        <span class="chip-count">×${count}</span>
+      </div>`
+    ).join('');
+  }
+
+  function buildWordFrequency(entries) {
+    const freq = {};
+    entries.forEach(({ text }) => {
+      extractKeywords(text).forEach(w => {
+        freq[w] = (freq[w] || 0) + 1;
+      });
+    });
+    return Object.entries(freq)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 20);
+  }
+
+  function extractKeywords(text) {
+    return text
+      .split(/[\s\u3000、。！？!?,.…\n「」【】『』（）()\[\]\/\\：:；;・]+/)
+      .map(w => w.trim())
+      .filter(w =>
+        w.length >= 2 &&
+        w.length <= 15 &&
+        !STOP_WORDS.has(w) &&
+        /[^\d０-９]/.test(w)
+      );
+  }
+
+  function calcStreak() {
+    let streak = 0;
+    const now  = new Date();
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      if (hasEntryContent(toDateKey(d))) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    return streak;
+  }
+
+  /* ===== イベント・初期化 ===== */
+  function switchTab(tab) {
+    state.activeTab = tab;
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`view-${tab}`).classList.add('active');
+    document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+    if (tab === 'analysis') renderAnalysisView();
+  }
+
+  function navigateDate(delta) {
+    if (delta > 0 && state.currentDate === todayKey()) return;
+    clearTimeout(autosaveTimer);
+    state.currentDate = offsetDate(state.currentDate, delta);
+    updateHeader();
+    renderDiaryView();
+  }
+
+  function goToToday() {
+    clearTimeout(autosaveTimer);
+    state.currentDate = todayKey();
+    updateHeader();
+    renderDiaryView();
+  }
+
+  function initEventListeners() {
+    // タブ切替
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+
+    // 日付ナビ
+    document.getElementById('prev-btn').addEventListener('click', () => navigateDate(-1));
+    document.getElementById('next-btn').addEventListener('click', () => navigateDate(+1));
+    document.getElementById('today-btn').addEventListener('click', goToToday);
+
+    // テキストエリア 自動保存 + 自動リサイズ
+    ['field-goal','field-done','field-obstacles','field-tomorrow'].forEach(id => {
+      const ta = document.getElementById(id);
+      ta.addEventListener('input', () => {
+        autoResizeTextarea(ta);
+        updateSaveBtn();
+        scheduleAutosave();
+      });
+    });
+
+    // 保存ボタン
+    document.getElementById('save-btn').addEventListener('click', () => {
+      clearTimeout(autosaveTimer);
+      saveCurrentEntry();
+      showSaveIndicator();
+    });
+
+    // 期間セレクタ
+    document.querySelectorAll('.period-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.analysisDays = Number(btn.dataset.days);
+        renderAnalysisView();
+      });
+    });
+
+    // スワイプで日付移動
+    let touchStartX = 0;
+    const mainContent = document.getElementById('main-content');
+    mainContent.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].clientX;
+    }, { passive: true });
+    mainContent.addEventListener('touchend', e => {
+      if (state.activeTab !== 'diary') return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 60) navigateDate(dx < 0 ? -1 : +1);
+    }, { passive: true });
+  }
+
+  function init() {
+    loadData();
+    state.currentDate = todayKey();
+    updateHeader();
+    renderDiaryView();
+    initEventListeners();
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>
